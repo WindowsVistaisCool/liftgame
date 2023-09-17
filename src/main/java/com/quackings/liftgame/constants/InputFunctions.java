@@ -2,6 +2,7 @@ package com.quackings.liftgame.constants;
 
 import com.almasb.fxgl.input.UserAction;
 import com.quackings.liftgame.Player;
+import com.quackings.liftgame.PlayerAnimationComponent;
 import com.quackings.liftgame.suppliers.PlayerSpeedSupplier;
 import com.quackings.liftgame.suppliers.UserActionSupplier;
 
@@ -11,8 +12,8 @@ public class InputFunctions {
             return new UserAction("MOVE_PLAYER_" + args.get("idSuffix")) {
                 @Override
                 protected void onAction() {
-                    entity.translateX((double)args.get("x")*((PlayerSpeedSupplier) args.get("speed")).getSpeed());
-                    entity.translateY((double)args.get("y")*((PlayerSpeedSupplier) args.get("speed")).getSpeed());
+                    entity.getComponent(PlayerAnimationComponent.class).moveX((int)((double)args.get("x")*((PlayerSpeedSupplier) args.get("speed")).getSpeed()));
+                    // entity.translateY((double)args.get("y")*((PlayerSpeedSupplier) args.get("speed")).getSpeed());
                 }
             };
         };

@@ -16,7 +16,7 @@ import javafx.scene.text.Text;
 public class Player extends Entity {
     public static Player playerInstance = null;
     
-    public static double speed = 5.0;
+    public static double speed = 10.0;
     private static Map<KeyCode, Map<String, Object>> inputMaps = new HashMap<KeyCode, Map<String, Object>>() {{
         put(KeyCode.W, new HashMap<String, Object>() {{
             put("idSuffix", "W");
@@ -53,11 +53,16 @@ public class Player extends Entity {
     }};
 
     private Entity playerEntity;
+    private PlayerAnimationComponent animationComponent;
 
-    public Player(Entity fromBuilder) {
+    public Player() {
         super();
 
-        this.playerEntity = fromBuilder;
+        this.animationComponent = new PlayerAnimationComponent();
+        this.playerEntity = FXGL.entityBuilder()
+            .at(150, 150)
+            .with(this.animationComponent)
+            .buildAndAttach();
 
         if (playerInstance == null) {
             playerInstance = this;
@@ -70,7 +75,7 @@ public class Player extends Entity {
             FXGL.set("speed", (int)speed*10);
         }
 
-        List<KeyCode> keys = Arrays.asList(KeyCode.W, KeyCode.A, KeyCode.S, KeyCode.D);
+        List<KeyCode> keys = Arrays.asList(KeyCode.A, KeyCode.D);
         for (KeyCode key : keys) {
             inputManagerInstance.addAction(key, InputFunctions.suppliers.MOVE_PLAYER.supply(this.playerEntity, inputMaps.get(key)));
         }

@@ -5,28 +5,29 @@ import java.util.Map;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.dsl.FXGL;
+import com.quackings.liftgame.constants.Constants;
 
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
 public class Main extends GameApplication {
-    protected InputManager inputManager;
-    
+    private InputManager inputManager;
+    private LevelManager levelManager;
+
     private Player player;
 
     public Main () {
         super();
 
         this.inputManager = new InputManager(() -> FXGL.getInput());
+        this.levelManager = new LevelManager();
     }
 
     @Override
     protected void initSettings(GameSettings settings) {
-        settings.setWidth(1500);
-        settings.setHeight(1000);
-        settings.setTitle("Lift Game");
-        settings.setVersion("v0.1-ALPHA");
+        settings.setWidth(Constants.GAME_WIDTH);
+        settings.setHeight(Constants.GAME_HEIGHT);
+        settings.setTitle(Constants.GAME_TITLE);
+        settings.setVersion(Constants.GAME_VERSION);
     }
 
     @Override
@@ -36,25 +37,33 @@ public class Main extends GameApplication {
     
     @Override
     protected void initGame() {
-        player = new Player(
-            FXGL.entityBuilder()
-                .at(150, 150)
-                .view(new Rectangle(40, 40, Color.BLUE))
-                .buildAndAttach()
-        )
+        FXGL.getGameScene().setBackgroundRepeat("bg.png");
+
+        player = new Player()
             .configureInput(inputManager);
+
+        levelManager.loadLevel();
     }
+
+    // @Override
+    // protected void initPhysics() {
+    //     FXGL.getPhysicsWorld().setGravity(0, 0);
+    // }
 
     @Override
     protected void initUI() {
-        Text speed = new Text("Speed: 0");
+        Text speed = new Text("Speed: ??");
         speed.setTranslateX(50);
         speed.setTranslateY(50);
-        // uiElements.add(speed);
         FXGL.getGameScene().addUINode(speed);
 
         player.configureSpeedText(speed);
     }
+
+    // @Override
+    // protected void onUpdate(double tfp) {
+    //     player.update();
+    // }
 
     public static void main(String[] args) {
         launch(args);
