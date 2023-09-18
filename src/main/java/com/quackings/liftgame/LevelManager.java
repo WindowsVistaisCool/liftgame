@@ -1,6 +1,7 @@
 package com.quackings.liftgame;
 
 import com.almasb.fxgl.dsl.FXGL;
+import com.quackings.liftgame.constants.EntityTypes;
 
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -17,8 +18,9 @@ public class LevelManager {
 
     public void loadLevel() {
         FXGL.entityBuilder()
-            .at(100, 500)
-            .view(new Rectangle(1000, 20, Color.RED))
+            .type(EntityTypes.PLATFORM)
+            .at(100, 675)
+            .viewWithBBox(new Rectangle(1400, 40, Color.BLACK))
             .collidable()
             .buildAndAttach();
     }

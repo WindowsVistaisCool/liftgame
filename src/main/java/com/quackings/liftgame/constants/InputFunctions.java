@@ -26,6 +26,33 @@ public class InputFunctions {
                 }
             };
         };
+
+        public static UserActionSupplier MODIFY_PLAYER_FALL = (entity, args) -> {
+            return new UserAction("MODIFY_PLAYER_FALL_" + args.get("idSuffix")) {
+                @Override
+                protected void onActionBegin() {
+                    Player.isFalling = !Player.isFalling;
+                }
+            };
+        };
+
+        public static UserActionSupplier JUMP_PLAYER = (entity, args) -> {
+            return new UserAction("JUMP_PLAYER") {
+                @Override
+                protected void onAction() {
+                    entity.getComponent(PlayerAnimationComponent.class).jump();
+                }
+            };
+        };
+
+        public static UserActionSupplier RESET_PLAYER = (entity, args) -> {
+            return new UserAction("RESET_PLAYER") {
+                @Override
+                protected void onActionBegin() {
+                    entity.getComponent(PlayerAnimationComponent.class).reset();
+                }
+            };
+        };
     }
 
     public static UserAction print = new UserAction("Print Line") {

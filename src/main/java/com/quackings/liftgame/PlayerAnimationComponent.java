@@ -18,7 +18,7 @@ public class PlayerAnimationComponent extends Component {
 
     public PlayerAnimationComponent() {
         animIdle = new AnimationChannel(FXGL.image("playerIdle.png"), 8, 58, 70, javafx.util.Duration.seconds(1), 0, 7);
-        animWalk = new AnimationChannel(FXGL.image("playerWalk.png"), 8, 64, 70, javafx.util.Duration.seconds(1), 0, 6);
+        // animWalk = new AnimationChannel(FXGL.image("playerWalk.png"), 8, 64, 70, javafx.util.Duration.seconds(1), 0, 6);
         animRun = new AnimationChannel(FXGL.image("playerRun.png"), 8, 60, 70, javafx.util.Duration.seconds(1), 0, 7);
 
         texture = new AnimatedTexture(animIdle);
@@ -44,12 +44,12 @@ public class PlayerAnimationComponent extends Component {
             if (FXGLMath.abs(speed) < 1) {
                 speed = 0;
                 texture.loopAnimationChannel(animIdle);
-            }
+            }   
         }
     }
 
     public void moveX(int speed) {
-        this.speed = speed*50;
+        this.speed = (int)(speed*50 *(Player.isFalling ? 0.65 : 1));
 
         getEntity().setScaleX(speed > 0 ? 1 : -1);
         
@@ -58,6 +58,16 @@ public class PlayerAnimationComponent extends Component {
         }
 
         isFlipped = speed < 0;
+    }
+
+    public void jump() {
+        entity.translateY(-25);
+    }
+ 
+    public void reset() {
+        texture.loopAnimationChannel(animIdle);
+        entity.setX(150);
+        entity.setY(150);
     }
     
 }

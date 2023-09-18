@@ -7,6 +7,9 @@ import java.util.Map;
 
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.physics.BoundingShape;
+import com.almasb.fxgl.physics.HitBox;
+import com.quackings.liftgame.constants.EntityTypes;
 import com.quackings.liftgame.constants.InputFunctions;
 import com.quackings.liftgame.suppliers.PlayerSpeedSupplier;
 
@@ -16,7 +19,10 @@ import javafx.scene.text.Text;
 public class Player extends Entity {
     public static Player playerInstance = null;
     
-    public static double speed = 10.0;
+    public static boolean isFalling = true;
+    public static int gravity = 500;
+    public static double speed = 8.0;
+
     private static Map<KeyCode, Map<String, Object>> inputMaps = new HashMap<KeyCode, Map<String, Object>>() {{
         put(KeyCode.W, new HashMap<String, Object>() {{
             put("idSuffix", "W");
@@ -50,9 +56,15 @@ public class Player extends Entity {
             put("idSuffix", "SPEED");
             put("speed", (PlayerSpeedSupplier) () -> speed + 1.0);
         }});
+        put(KeyCode.F, new HashMap<String, Object>() {{
+            put("idSuffix", "FALL");
+        }});
+        put(KeyCode.R, new HashMap<String, Object>() {{}});
+        put(KeyCode.SPACE, new HashMap<String, Object>() {{}});
     }};
 
     private Entity playerEntity;
+    private PlayerEntityPhysics physics;
     private PlayerAnimationComponent animationComponent;
 
     public Player() {
@@ -60,9 +72,14 @@ public class Player extends Entity {
 
         this.animationComponent = new PlayerAnimationComponent();
         this.playerEntity = FXGL.entityBuilder()
+            .type(EntityTypes.PLAYER)
             .at(150, 150)
             .with(this.animationComponent)
+            .bbox(new HitBox(BoundingShape.box(35, 70)))
+            .collidable()
             .buildAndAttach();
+
+        this.physics = new PlayerEntityPhysics(this.playerEntity, EntityTypes.PLAYER, gravity, () -> Player.isFalling);
 
         if (playerInstance == null) {
             playerInstance = this;
@@ -80,8 +97,12 @@ public class Player extends Entity {
             inputManagerInstance.addAction(key, InputFunctions.suppliers.MOVE_PLAYER.supply(this.playerEntity, inputMaps.get(key)));
         }
 
+        inputManagerInstance.addAction(KeyCode.SPACE, InputFunctions.suppliers.JUMP_PLAYER.supply(this.playerEntity, inputMaps.get(KeyCode.SPACE)));
+
         inputManagerInstance.addAction(KeyCode.Q, InputFunctions.suppliers.MODIFY_PLAYER_SPEED.supply(this.playerEntity, inputMaps.get(KeyCode.Q)));
         inputManagerInstance.addAction(KeyCode.E, InputFunctions.suppliers.MODIFY_PLAYER_SPEED.supply(this.playerEntity, inputMaps.get(KeyCode.E)));
+
+        inputManagerInstance.addAction(KeyCode.R, InputFunctions.suppliers.RESET_PLAYER.supply(this.playerEntity, inputMaps.get(KeyCode.R)));
 
         return this;
     }
@@ -93,6 +114,14 @@ public class Player extends Entity {
         return this;
     }
 
+    public EntityPhysics getPhysics() {
+        return this.physics;
+    }
+
+    public void tick(double tpf) {
+        this.physics.update(tpf);
+    }
+
     public static void setSpeed(double speed) {
         Player.speed = speed;
         FXGL.set("speed", (int)speed*10);
@@ -102,3 +131,4 @@ public class Player extends Entity {
         return playerInstance;
     }
 }
+

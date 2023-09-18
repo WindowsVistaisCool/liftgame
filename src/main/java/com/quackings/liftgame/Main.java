@@ -40,15 +40,15 @@ public class Main extends GameApplication {
         FXGL.getGameScene().setBackgroundRepeat("bg.png");
 
         player = new Player()
-            .configureInput(inputManager);
+            .configureInput(inputManager);        
 
         levelManager.loadLevel();
     }
 
-    // @Override
-    // protected void initPhysics() {
-    //     FXGL.getPhysicsWorld().setGravity(0, 0);
-    // }
+    @Override
+    protected void initPhysics() {
+        player.getPhysics().setupCollision();
+    }
 
     @Override
     protected void initUI() {
@@ -58,12 +58,14 @@ public class Main extends GameApplication {
         FXGL.getGameScene().addUINode(speed);
 
         player.configureSpeedText(speed);
+
+        Debug.newText("IsFalling", 50, 75);
     }
 
-    // @Override
-    // protected void onUpdate(double tfp) {
-    //     player.update();
-    // }
+    @Override
+    protected void onUpdate(double tfp) {
+        player.tick(tfp);
+    }
 
     public static void main(String[] args) {
         launch(args);
